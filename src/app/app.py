@@ -1,30 +1,20 @@
 import chainlit as cl
-import semantic_kernel as sk
 from semantic_kernel.connectors.ai import FunctionChoiceBehavior
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion,
     OpenAIChatPromptExecutionSettings,
 )
-from semantic_kernel.functions import kernel_function
-from semantic_kernel.contents import ChatHistory
 
-import asyncio
 import os
 
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
-from dotenv import load_dotenv
-from rich.console import Console
-from rich.markdown import Markdown
-from rich.markup import escape
-from rich.panel import Panel
 from semantic_kernel.agents import (
     AzureAIAgent,
     MagenticOrchestration,
     StandardMagenticManager,
 )
 from semantic_kernel.agents.runtime import InProcessRuntime
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
 from semantic_kernel.contents import StreamingChatMessageContent
 
 
@@ -45,13 +35,12 @@ async def on_chat_start():
     cl.user_session.set("client", client)
 
 
-
-
 @cl.on_message
 async def on_message(message: cl.Message):
     answer = cl.Message(content="")
+
     async def agent_response_callback(message: StreamingChatMessageContent) -> None:
-        print(f"------------------------------- {message.name} -------------------------------")
+        print(f"--------------------------- {message.name} -------------------------")
         async with cl.Step(name=message.name) as step:
             step.output = message.content
 
@@ -76,7 +65,7 @@ async def on_message(message: cl.Message):
                     api_version="2025-01-01-preview",
                 ),
             )
-        ),        
+        ),
         agent_response_callback=agent_response_callback,
     )
 
@@ -96,7 +85,7 @@ async def on_message(message: cl.Message):
 
 @cl.on_chat_end
 async def on_app_shutdown():
-    runtime: InProcessRuntime = cl.user_session.get("runtime") 
+    runtime: InProcessRuntime = cl.user_session.get("runtime")
     if runtime:
         await runtime.stop_when_idle()
 
@@ -107,10 +96,14 @@ async def set_starters():
         cl.Starter(
             label="Plan a route to destroy the One Ring",
             message=(
-            "Plan a route to destroy the One Ring. Leverage the strengths of each member of the fellowship you can use in the conversation. "
-            "Ask every agent of the team at least once. "
-            "Provide a detailed plan with calculations about how long it will take and how much provisions to pack. Make all the necessary assumptions. Merry can do the calculations. "
-            "The fellowship consists of 9 members: Frodo, Sam, Merry, Pippin, Aragorn, Legolas, Gimli, Boromir, and Gandalf. "
+                "Plan a route to destroy the One Ring. Leverage the strengths of each member "
+                " of the fellowship you can use in the conversation. "
+                "Ask every agent of the team at least once. "
+                "Provide a detailed plan with calculations about how long it will take and how "
+                " much provisions to pack. Make all the necessary assumptions. Merry can do the "
+                " calculations. "
+                "The fellowship consists of 9 members: Frodo, Sam, Merry, Pippin, Aragorn, Legolas, "
+                "Gimli, Boromir, and Gandalf. "
             ),
         ),
     ]

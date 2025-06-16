@@ -41,10 +41,12 @@ def agent_response_callback(message: ChatMessageContent) -> None:
         )
     )
 
+
 client = AzureAIAgent.create_client(
     endpoint=os.environ["AI_FOUNDRY_PROJECT_ENDPOINT"],
     credential=DefaultAzureCredential(),
 )
+
 
 async def run(client: AIProjectClient):
     agents = [
@@ -66,7 +68,7 @@ async def run(client: AIProjectClient):
                     api_version="2025-01-01-preview",
                 ),
             )
-        ),        
+        ),
         agent_response_callback=agent_response_callback,
     )
 
@@ -75,8 +77,10 @@ async def run(client: AIProjectClient):
     orchestration_result = await magentic_orchestration.invoke(
         task=(
             "Plan a route to destroy the One Ring. Leverage the strengths of each agent "
-            "Provide a detailed plan with calculations about how long it will take and how much provisions to pack. Make all the necessary assumptions. "
-            "The fellowship consists of 9 members: Frodo, Sam, Merry, Pippin, Aragorn, Legolas, Gimli, Boromir, and Gandalf. "
+            "Provide a detailed plan with calculations about how long it will take and how "
+            " much provisions to pack. Make all the necessary assumptions. "
+            "The fellowship consists of 9 members: Frodo, Sam, Merry, Pippin, Aragorn, "
+            "Legolas, Gimli, Boromir, and Gandalf. "
         ),
         runtime=runtime,
     )

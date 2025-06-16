@@ -23,7 +23,12 @@ from semantic_kernel.agents.strategies.termination.termination_strategy import (
     TerminationStrategy,
 )
 
-from semantic_kernel.agents import GroupChatManager, BooleanResult, StringResult, MessageResult
+from semantic_kernel.agents import (
+    GroupChatManager,
+    BooleanResult,
+    StringResult,
+    MessageResult,
+)
 from semantic_kernel.contents import ChatMessageContent, ChatHistory
 
 from semantic_kernel.kernel import Kernel
@@ -44,15 +49,22 @@ from rich.logging import RichHandler
 #     datefmt="[%X]",
 #     handlers=[RichHandler(rich_tracebacks=True)],
 # )
-   
+
+
 def agent_response_callback(message: ChatMessageContent) -> None:
-    #console.print(f"[bold yellow]{message.name}[/]\n[cyan]{escape(message.content)}[/]")
-    console.print(Panel(title=message.name, renderable=escape(message.content), title_align="left"))
+    # console.print(f"[bold yellow]{message.name}[/]\n[cyan]{escape(message.content)}[/]")
+    console.print(
+        Panel(
+            title=message.name, renderable=escape(message.content), title_align="left"
+        )
+    )
+
 
 client = AzureAIAgent.create_client(
     credential=DefaultAzureCredential(),
     endpoint=os.environ["AI_FOUNDRY_PROJECT_ENDPOINT"],
 )
+
 
 async def run(client):
     agents = [
@@ -69,7 +81,6 @@ async def run(client):
         members=agents,
         manager=RoundRobinGroupChatManager(max_rounds=5),
         agent_response_callback=agent_response_callback,
-
     )
 
     runtime = InProcessRuntime()
@@ -77,16 +88,21 @@ async def run(client):
     orchestration_result = await group_chat_orchestration.invoke(
         task=(
             "Plan a route to destroy the One Ring. "
-            "IMPORTANT: **The 5th and final speaker should decide and summarize the plan.**"),
+            "IMPORTANT: **The 5th and final speaker should decide and summarize the plan.**"
+        ),
         runtime=runtime,
     )
 
-    # access the kernel here so that we can call a semantic kernel function
-    runtime.
-
     value = await orchestration_result.get()
-    console.print(Panel(title="[cyan]Final Result[/]", renderable=escape(value.content), title_align="left", ))
+    console.print(
+        Panel(
+            title="[cyan]Final Result[/]",
+            renderable=escape(value.content),
+            title_align="left",
+        )
+    )
 
     await runtime.stop_when_idle()
+
 
 asyncio.run(run(client))

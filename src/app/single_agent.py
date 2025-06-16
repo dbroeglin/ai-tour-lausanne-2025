@@ -1,26 +1,13 @@
 import asyncio
 import os
-from pathlib import Path
 
-import yaml
-from azure.ai.agents import AgentsClient
-from azure.ai.agents.models import CodeInterpreterTool
-from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
 from rich.console import Console
 from semantic_kernel.agents import (
-    AgentGroupChat,
     AzureAIAgent,
-    AzureAIAgentSettings,
     AzureAIAgentThread,
-    AzureAIAgent
 )
-from semantic_kernel.agents.strategies import KernelFunctionSelectionStrategy
-from semantic_kernel.agents.strategies.termination.termination_strategy import (
-    TerminationStrategy,
-)
-from semantic_kernel.kernel import Kernel
 
 load_dotenv()
 console = Console()
@@ -31,6 +18,7 @@ client = AzureAIAgent.create_client(
     endpoint=os.environ["AI_FOUNDRY_PROJECT_ENDPOINT"],
 )
 
+
 async def run(client):
     agents = {agent.name: agent async for agent in client.agents.list_agents()}
 
@@ -38,7 +26,7 @@ async def run(client):
     agent = AzureAIAgent(
         client=client,
         definition=agent_definition,
-        #plugins=[MenuPlugin()],  # add the sample plugin to the agent
+        # plugins=[MenuPlugin()],  # add the sample plugin to the agent
     )
     thread: AzureAIAgentThread = AzureAIAgentThread(client=client)
 
@@ -49,5 +37,6 @@ async def run(client):
             thread = response.thread
     finally:
         thread.delete() if thread else None
+
 
 asyncio.run(run(client))
